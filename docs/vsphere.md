@@ -8,7 +8,7 @@ Kubespray can be deployed with vSphere as Cloud provider. This feature supports
 
 ## Prerequisites
 
-You need at first to configure you vSphere environement by following the [official documentation](https://kubernetes.io/docs/getting-started-guides/vsphere/#vsphere-cloud-provider).
+You need at first to configure your vSphere environment by following the [official documentation](https://kubernetes.io/docs/getting-started-guides/vsphere/#vsphere-cloud-provider).
 
 After this step you should have:
 - UUID activated for each VM where Kubernetes will be deployed
@@ -16,12 +16,12 @@ After this step you should have:
 
 ## Kubespray configuration
 
-Fist you must define the cloud provider in `inventory/group_vars/all.yml` and set it to `vsphere`.
+First you must define the cloud provider in `inventory/sample/group_vars/all.yml` and set it to `vsphere`.
 ```yml
 cloud_provider: vsphere
 ```
 
-Then, in the same file, you need to declare your vCenter credential following the description bellow.
+Then, in the same file, you need to declare your vCenter credential following the description below.
 
 | Variable                     | Required | Type    | Choices                    | Default | Comment                                                                                                                                                                                       |
 |------------------------------|----------|---------|----------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -34,10 +34,12 @@ Then, in the same file, you need to declare your vCenter credential following th
 | vsphere_datastore            | TRUE     | string  |                            |         | Datastore name to use                                                                                                                                                                         |
 | vsphere_working_dir          | TRUE     | string  |                            |         | Working directory from the view "VMs and template" in the   vCenter where VM are placed                                                                                                       |
 | vsphere_scsi_controller_type | TRUE     | string  | buslogic, pvscsi, parallel | pvscsi  | SCSI controller name. Commonly "pvscsi".                                                                                                                                                      |
-| vsphere_vm_uuid              | FALSE    | string  |                            |         | VM Instance UUID of virtual machine that host K8s master. Can be   retrieved from instanceUuid property in VmConfigInfo, or as vc.uuid in VMX   file or in `/sys/class/dmi/id/product_serial` |
+| vsphere_vm_uuid              | FALSE    | string  |                            |         | VM Instance UUID of virtual machine that host K8s master. Can be   retrieved from instanceUuid property in VmConfigInfo, or as vc.uuid in VMX   file or in `/sys/class/dmi/id/product_serial` (Optional, only used for Kubernetes <= 1.9.2) |
 | vsphere_public_network       | FALSE    | string  |                            | Blank   | Name of the   network the VMs are joined to                                                                                                                                                   |
+| vsphere_resource_pool       | FALSE    | string  |                            | Blank   | Name of the Resource pool where the VMs are located (Optional, only used for Kubernetes >= 1.9.2)                                                                                                                                                 |
 
 Example configuration
+
 ```yml
 vsphere_vcenter_ip: "myvcenter.domain.com"
 vsphere_vcenter_port: 443
@@ -48,6 +50,7 @@ vsphere_datacenter: "DATACENTER_name"
 vsphere_datastore: "DATASTORE_name"
 vsphere_working_dir: "Docker_hosts"
 vsphere_scsi_controller_type: "pvscsi"
+vsphere_resource_pool: "K8s-Pool"
 ```
 
 ## Deployment
@@ -55,7 +58,7 @@ vsphere_scsi_controller_type: "pvscsi"
 Once the configuration is set, you can execute the playbook again to apply the new configuration
 ```
 cd kubespray
-ansible-playbook -i inventory/inventory.cfg -b -v cluster.yml
+ansible-playbook -i inventory/sample/hosts.ini -b -v cluster.yml
 ```
 
-You'll find some usefull examples [here](https://github.com/kubernetes/kubernetes/tree/master/examples/volumes/vsphere) to test your configuration.
+You'll find some useful examples [here](https://github.com/kubernetes/examples/tree/master/staging/volumes/vsphere) to test your configuration.

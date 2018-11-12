@@ -2,6 +2,12 @@ variable "cluster_name" {
   default = "example"
 }
 
+variable "az_list" {
+  description = "List of Availability Zones available in your OpenStack cluster"
+  type = "list"
+  default = ["nova"]
+}
+
 variable "number_of_bastions" {
   default = 1
 }
@@ -44,86 +50,109 @@ variable "gfs_volume_size_in_gb" {
 
 variable "public_key_path" {
   description = "The path of the ssh pub key"
-  default = "~/.ssh/id_rsa.pub"
+  default     = "~/.ssh/id_rsa.pub"
 }
 
 variable "image" {
   description = "the image to use"
-  default = "ubuntu-14.04"
+  default     = "ubuntu-14.04"
 }
 
 variable "image_gfs" {
   description = "Glance image to use for GlusterFS"
-  default = "ubuntu-16.04"
+  default     = "ubuntu-16.04"
 }
 
 variable "ssh_user" {
   description = "used to fill out tags for ansible inventory"
-  default = "ubuntu"
+  default     = "ubuntu"
 }
 
 variable "ssh_user_gfs" {
   description = "used to fill out tags for ansible inventory"
-  default = "ubuntu"
+  default     = "ubuntu"
 }
 
 variable "flavor_bastion" {
   description = "Use 'nova flavor-list' command to see what your OpenStack instance uses for IDs"
-  default = 3
+  default     = 3
 }
 
 variable "flavor_k8s_master" {
   description = "Use 'nova flavor-list' command to see what your OpenStack instance uses for IDs"
-  default = 3
+  default     = 3
 }
 
 variable "flavor_k8s_node" {
   description = "Use 'nova flavor-list' command to see what your OpenStack instance uses for IDs"
-  default = 3
+  default     = 3
 }
 
 variable "flavor_etcd" {
   description = "Use 'nova flavor-list' command to see what your OpenStack instance uses for IDs"
-  default = 3
+  default     = 3
 }
 
 variable "flavor_gfs_node" {
   description = "Use 'nova flavor-list' command to see what your OpenStack instance uses for IDs"
-  default = 3
+  default     = 3
 }
 
 variable "network_name" {
   description = "name of the internal network to use"
-  default = "internal"
+  default     = "internal"
 }
 
-variable "dns_nameservers"{
+variable "use_neutron" {
+  description = "Use neutron"
+  default     = 1
+}
+
+variable "subnet_cidr" {
+  description = "Subnet CIDR block."
+  type = "string"
+  default = "10.0.0.0/24"
+}
+
+variable "dns_nameservers" {
   description = "An array of DNS name server names used by hosts in this subnet."
-  type = "list"
-  default = []
+  type        = "list"
+  default     = []
 }
 
 variable "floatingip_pool" {
   description = "name of the floating ip pool to use"
-  default = "external"
+  default     = "external"
 }
 
 variable "external_net" {
   description = "uuid of the external/public network"
 }
 
-variable "username" {
-  description = "Your openstack username"
+variable "supplementary_master_groups" {
+  description = "supplementary kubespray ansible groups for masters, such kube-node"
+  default = ""
 }
 
-variable "password" {
-  description = "Your openstack password"
+variable "supplementary_node_groups" {
+  description = "supplementary kubespray ansible groups for worker nodes, such as kube-ingress"
+  default = ""
 }
 
-variable "tenant" {
-  description = "Your openstack tenant/project"
+variable "bastion_allowed_remote_ips" {
+  description = "An array of CIDRs allowed to SSH to hosts"
+  type = "list"
+  default = ["0.0.0.0/0"]
 }
 
-variable "auth_url" {
-  description = "Your openstack auth URL"
+variable "worker_allowed_ports" {
+  type = "list"
+  default = [
+    {
+      "protocol" = "tcp"
+      "port_range_min" = 30000
+      "port_range_max" = 32767
+      "remote_ip_prefix" = "0.0.0.0/0"
+    }
+  ]
 }

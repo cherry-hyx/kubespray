@@ -34,6 +34,9 @@
   delegate_to: "{{groups['etcd'][0]}}"
   changed_when: false
   run_once: true
+  environment:
+    ETCDCTL_CERT_FILE: "{{ etcd_cert_dir }}/admin-{{ groups['etcd'][0] }}.pem"
+    ETCDCTL_KEY_FILE: "{{ etcd_cert_dir }}/admin-{{ groups['etcd'][0] }}-key.pem"
 
 - name: Canal | Create canal node manifests
   template:
@@ -50,10 +53,9 @@
   register: canal_manifests
   when:
     - inventory_hostname in groups['kube-master']
-    - rbac_enabled or item.type not in rbac_resources
 
 - name: Canal | Copy cni plugins from hyperkube
-  command: "{{ docker_bin_dir }}/docker run --rm -v /opt/cni/bin:/cnibindir {{ hyperkube_image_repo }}:{{ hyperkube_image_tag }} /bin/cp -r /opt/cni/bin/. /cnibindir/"
+  command: "{{ docker_bin_dir }}/docker run --rm -v /opt/cni/bin:/cnibindir {{ hyperkube_image_repo }}:{{ hyperkube_image_tag }} /bin/cp -rf /opt/cni/bin/. /cnibindir/"
   register: cni_task_result
   until: cni_task_result.rc == 0
   retries: 4
